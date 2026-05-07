@@ -1,4 +1,5 @@
 /* AFSNIT 01 – App-controller */
+
 const App = {
   results: [],
   ctx: null,
@@ -45,7 +46,11 @@ const App = {
 
     Ui.el.api.addEventListener("click", () => {
       if (this.lastApiUrl) {
-        window.open(this.lastApiUrl, "_blank", "noopener,noreferrer");
+        window.open(
+          this.lastApiUrl,
+          "_blank",
+          "noopener,noreferrer"
+        );
       }
     });
 
@@ -115,16 +120,16 @@ const App = {
         limit,
         query,
         mode: "live",
-        apiUrl: kbResult.apiUrl
+        apiUrl: kbResult.apiUrl,
+        transport: kbResult.transport
       };
 
       Ui.render(this.results, this.ctx);
 
       Ui.status(
-        `Færdig. ${this.results.length} live-resultater behandlet.`
+        `Færdig. ${this.results.length} live-resultater behandlet via ${kbResult.transport}.`
       );
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
 
       Ui.mode("Fejl");
@@ -136,8 +141,7 @@ const App = {
       Ui.status(
         "Live-søgningen fejlede. Prøv større radius, anden stavning eller åbn KB direkte."
       );
-    }
-    finally {
+    } finally {
       Ui.loading(false);
     }
   },
@@ -191,7 +195,8 @@ const App = {
       limit: Number(Ui.el.limit.value),
       query,
       mode: "demo",
-      apiUrl: ""
+      apiUrl: "",
+      transport: "Demo"
     };
 
     Ui.render(this.results, this.ctx);
@@ -216,8 +221,7 @@ const App = {
 
     if (favorites.has(id)) {
       favorites.delete(id);
-    }
-    else {
+    } else {
       favorites.add(id);
     }
 
@@ -232,20 +236,28 @@ const App = {
   qa() {
     const lines = [
       {
-        ok: document.title.includes("v4"),
-        text: "Du kører v4, ikke den gamle demo-fallback-version."
+        ok: document.title.includes("v5"),
+        text: "Du kører v5."
       },
       {
         ok: APP_CONFIG.useDemoFallbackForNormalSearch === false,
         text: "Demo-fallback er slået fra for normal søgning."
       },
       {
+        ok: !!APP_CONFIG.corsProxyPrefix,
+        text: "CORS-fallback er sat."
+      },
+      {
         ok: typeof Api.searchKb === "function",
         text: "KB API-funktion findes."
       },
       {
+        ok: typeof Api.fetchJson === "function",
+        text: "Direkte fetch og fallback-fetch findes."
+      },
+      {
         ok: typeof Api.normalizeKbResponse === "function",
-        text: "KB GeoJSON-normalisering findes."
+        text: "KB-normalisering findes."
       },
       {
         ok: typeof Scoring.rank === "function",

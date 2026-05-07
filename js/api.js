@@ -1,4 +1,5 @@
-/* AFSNIT 01 – API og metadata-normalisering */
+/* AFSNIT 01 – API og KB-søgning */
+
 const Api = {
   async geocodePlace(query) {
     const clean = String(query || "").trim();
@@ -45,8 +46,7 @@ const Api = {
               : "DAWA adresse"
           };
         }
-      }
-      catch (error) {
+      } catch (error) {
         console.warn("DAWA-fejl", error);
       }
     }
@@ -80,8 +80,7 @@ const Api = {
         lon: Number(hit.lon),
         source: "OpenStreetMap/Nominatim"
       };
-    }
-    catch (error) {
+    } catch (error) {
       console.warn("Nominatim-fejl", error);
       return null;
     }
@@ -103,33 +102,53 @@ const Api = {
       box.south
     ].join(",");
 
-    const url = `${APP_CONFIG.kbApiBase}?${Utils.qs({
+    const apiUrl = `${APP_CONFIG.kbApiBase}?${Utils.qs({
       bbo,
       itemsPerPage: APP_CONFIG.itemsPerPage
     })}`;
 
+    let data;
+    let transport = "Direkte KB";
+
+    try {
+      data = await this.fetchJson(apiUrl);
+    } catch (directError) {
+      console.warn("Direkte KB-kald fejlede. Prøver CORS-fallback.", directError);
+
+      const proxyUrl =
+        APP_CONFIG.corsProxyPrefix +
+        encodeURIComponent(apiUrl);
+
+      data = await this.fetchJson(proxyUrl);
+      transport = "CORS-fallback";
+    }
+
+    return {
+      apiUrl,
+      transport,
+      items: this.normalizeKbResponse(data, center, apiUrl)
+    };
+  },
+
+  async fetchJson(url) {
     const response = await fetch(url, {
-      headers: { Accept: "application/json" }
+      headers: { Accept: "application/json" },
+      cache: "no-store"
     });
 
     if (!response.ok) {
-      throw new Error(`KB API-fejl ${response.status}`);
+      throw new Error(`API-fejl ${response.status}`);
     }
 
-    const data = await response.json();
-
-    return {
-      apiUrl: url,
-      items: this.normalizeKbResponse(data, center, url)
-    };
+    return await response.json();
   },
 
   normalizeKbResponse(data, center, apiUrl) {
     const rawItems =
       Array.isArray(data)
         ? data
-        : data?.items ||
-          data?.features ||
+        : data?.features ||
+          data?.items ||
           data?.records ||
           data?.response?.docs ||
           data?.result ||
@@ -217,12 +236,18 @@ const Api = {
 
       const src =
         props.src ||
-        this.getFirst(flat, ["properties.src", "src"]) ||
+        this.getFirst(flat, [
+          "properties.src",
+          "src"
+        ]) ||
         "";
 
       const thumbnail =
         props.thumbnail ||
-        this.getFirst(flat, ["properties.thumbnail", "thumbnail"]) ||
+        this.getFirst(flat, [
+          "properties.thumbnail",
+          "thumbnail"
+        ]) ||
         "";
 
       const imageUrl = thumbnail || src || "";
@@ -230,7 +255,10 @@ const Api = {
       const viewerLink =
         props.url ||
         props.link ||
-        this.getFirst(flat, ["properties.url", "properties.link"]) ||
+        this.getFirst(flat, [
+          "properties.url",
+          "properties.link"
+        ]) ||
         APP_CONFIG.kbViewerBase;
 
       return {
@@ -271,7 +299,8 @@ const Api = {
     );
 
     for (const key of keys) {
-      const value = lowerMap.get(String(key).toLowerCase());
+      const value =
+        lowerMap.get(String(key).toLowerCase());
 
       if (value !== undefined && value !== null && value !== "") {
         return value;
@@ -300,6 +329,7 @@ const Api = {
       obj.forEach((value, index) => {
         this.flattenObject(value, `${prefix}[${index}]`, out);
       });
+
       return out;
     }
 
@@ -308,8 +338,7 @@ const Api = {
 
       if (value && typeof value === "object") {
         this.flattenObject(value, nextKey, out);
-      }
-      else {
+      } else {
         out[nextKey] = value;
       }
     });

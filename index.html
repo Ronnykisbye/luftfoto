@@ -3,28 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Luftfoto Arkivet Pro</title>
+  <title>Luftfoto Arkivet Pro v4</title>
   <meta name="description" content="Find historiske danske luftfotos efter adresse, sted og cirka-årstal." />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/theme.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/print.css" media="print" />
 </head>
+
 <body>
   <!-- AFSNIT 01 – Topbar -->
   <header class="topbar">
-    <a class="brand" href="./" aria-label="Luftfoto Arkivet Pro">
+    <a class="brand" href="./" aria-label="Luftfoto Arkivet Pro v4">
       <img class="brand__icon" src="assets/icon.svg" alt="" />
       <span>
-        <strong>Luftfoto Arkivet Pro</strong>
-        <small>Historiske luftfotos • KB API • GitHub Pages</small>
+        <strong>Luftfoto Arkivet Pro v4</strong>
+        <small>Kun live-søgning ved normal søgning</small>
       </span>
     </a>
+
     <nav class="topbar__actions" aria-label="Handlinger">
       <button id="themeToggle" class="ghost-btn" type="button">☀️ / 🌙</button>
-      <button id="installBtn" class="ghost-btn" type="button" hidden>Installér</button>
       <a class="ghost-btn" href="docs/README.md" target="_blank" rel="noreferrer">README</a>
     </nav>
   </header>
@@ -36,29 +36,31 @@
         <p class="eyebrow">Danmark før Google</p>
         <h1>Se historien fra luften</h1>
         <p class="lead">
-          Indtast en adresse, et område eller en bydel. Vælg cirka-årstal.
-          Appen finder luftfotos, vurderer afstand og årstal, og viser de bedste match først.
+          Søg live i Det Kgl. Biblioteks luftfoto-API. Demo-data bruges kun ved de to demo-knapper.
+          Almindelige søgninger kan ikke længere vise gamle demo-resultater.
         </p>
+
         <div class="hero__actions">
           <button id="moselundBtn" class="secondary-btn" type="button">Demo: Moselundsvej 1950</button>
           <button id="vesterbroBtn" class="secondary-btn" type="button">Demo: Vesterbro 1950</button>
         </div>
       </div>
+
       <div class="hero__archive-card">
-        <span class="stamp">ARKIV</span>
+        <span class="stamp">v4</span>
         <img src="assets/archive-preview.svg" alt="Illustration af historisk luftfoto" />
-        <p>Live søgning + sikker demo-fallback</p>
+        <p>Rettet: ingen falske demo-resultater i live-søgning.</p>
       </div>
     </section>
 
-    <!-- AFSNIT 03 – Søgning -->
+    <!-- AFSNIT 03 – Søgeformular -->
     <section class="panel search-panel">
       <div class="section-title">
         <div>
           <h2>Søg efter luftfotos</h2>
-          <p>Prøv fx “Vesterbro København”, “Moselundsvej Helsingør” eller “Aarhus Havn”.</p>
+          <p>Prøv fx “Odense Havn”, “Helsingør” eller “Vesterbro København”.</p>
         </div>
-        <span id="sourcePill" class="pill">Kilde: KB + geokodning</span>
+        <span id="sourcePill" class="pill">Tilstand: Klar</span>
       </div>
 
       <form id="searchForm" class="search-grid">
@@ -66,20 +68,23 @@
           <span>Adresse eller sted</span>
           <input id="placeInput" type="text" required placeholder="Skriv adresse, bydel eller område" />
         </label>
+
         <label>
           <span>Cirka-årstal</span>
           <input id="yearInput" type="number" min="1890" max="2010" value="1950" required />
         </label>
+
         <label>
           <span>Radius</span>
           <select id="radiusInput">
-            <option value="300">300 m</option>
-            <option value="750" selected>750 m</option>
-            <option value="1500">1,5 km</option>
+            <option value="750">750 m</option>
+            <option value="1500" selected>1,5 km</option>
             <option value="3000">3 km</option>
             <option value="6000">6 km</option>
+            <option value="10000">10 km</option>
           </select>
         </label>
+
         <label>
           <span>Vis</span>
           <select id="limitInput">
@@ -88,36 +93,34 @@
             <option value="50">50</option>
           </select>
         </label>
+
         <button class="primary-btn" type="submit">Find luftfotos</button>
       </form>
 
-      <div id="status" class="status" role="status">Klar. Vælg demo eller lav en søgning.</div>
+      <div id="status" class="status" role="status">
+        Klar. Normal søgning bruger kun live KB-data.
+      </div>
     </section>
 
     <!-- AFSNIT 04 – Dashboard -->
     <section class="dashboard">
       <aside class="panel side-panel">
         <h2>Kontrolpanel</h2>
+
         <button id="qaBtn" class="full-btn" type="button">Kør intern QA-test</button>
         <button id="jsonBtn" class="full-btn" type="button" disabled>Eksportér JSON</button>
         <button id="csvBtn" class="full-btn" type="button" disabled>Eksportér CSV</button>
+        <button id="apiBtn" class="full-btn" type="button" disabled>Åbn seneste API-kald</button>
         <button id="clearBtn" class="full-btn danger" type="button">Ryd resultater</button>
 
         <div class="mini-box">
-          <strong>Scoremodel</strong>
-          <p>Laveste score vinder: årsforskel vægtes højt, afstand vægtes lavere.</p>
+          <strong>Rettet i v4</strong>
+          <p>Normal søgning kan ikke bruge demo-data. Hvis KB fejler, får du en fejlbesked i stedet.</p>
         </div>
 
         <div class="mini-box">
-          <strong>Superfunktioner i v2</strong>
-          <ul>
-            <li>Demo-fallback uden API</li>
-            <li>QA-panel</li>
-            <li>JSON/CSV eksport</li>
-            <li>Favoritter</li>
-            <li>Kort-link</li>
-            <li>Robust metadata-læsning</li>
-          </ul>
+          <strong>KB-format understøttet</strong>
+          <p>v4 læser GeoJSON: geometry.coordinates, properties.subjectCreationDate, properties.thumbnail og properties.src.</p>
         </div>
       </aside>
 
@@ -127,7 +130,7 @@
             <h2>Resultater</h2>
             <p id="resultSummary">Ingen resultater endnu.</p>
           </div>
-          <span id="modeBadge" class="pill">Live/demotilstand</span>
+          <span id="modeBadge" class="pill">Klar</span>
         </div>
 
         <div id="timeline" class="timeline"></div>
@@ -138,7 +141,7 @@
   </main>
 
   <footer class="footer">
-    <p>Lavet som statisk webapp til GitHub Pages. Brug altid KB’s egne vilkår ved download og viderebrug.</p>
+    <p>Luftfoto Arkivet Pro v4 • GitHub Pages-klar • Ingen skjult demo-fallback ved normal søgning</p>
   </footer>
 
   <script src="js/config.js"></script>

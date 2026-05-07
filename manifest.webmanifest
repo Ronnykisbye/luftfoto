@@ -1,1 +1,17 @@
-{"name":"Luftfoto Arkivet Pro","short_name":"Luftfoto Pro","description":"Find historiske luftfotos efter adresse og cirka-årstal.","start_url":"./","display":"standalone","background_color":"#231914","theme_color":"#7b3f1f","icons":[{"src":"assets/icon.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any"}]}
+{
+  "name": "Luftfoto Arkivet Pro v4",
+  "short_name": "Luftfoto v4",
+  "description": "Find historiske luftfotos efter adresse og cirka-årstal.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#231914",
+  "theme_color": "#7b3f1f",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-/* AFSNIT 01 – API og KB-søgning */
+/* AFSNIT 01 – API og geokodning */
 
 const Api = {
   async geocodePlace(query) {
@@ -8,20 +8,32 @@ const Api = {
       throw new Error("Skriv en adresse eller et sted.");
     }
 
-    const hit =
-      await this.geocodeDawa(clean) ||
-      await this.geocodeNominatim(clean);
+    // AFSNIT 01.1 – Først DAWA, bedst til rigtige danske adresser
+    const dawaHit = await this.geocodeDawa(clean);
 
-    if (hit) return hit;
+    if (dawaHit) {
+      return dawaHit;
+    }
 
-    throw new Error("Stedet blev ikke fundet. Prøv fx vejnavn + by.");
+    // AFSNIT 01.2 – Derefter OpenStreetMap, bedst til steder som havne, parker og bydele
+    const nominatimHit = await this.geocodeNominatim(clean);
+
+    if (nominatimHit) {
+      return nominatimHit;
+    }
+
+    throw new Error(
+      "Stedet blev ikke fundet. Prøv fx bynavn, vejnavn + by eller et mere kendt stednavn."
+    );
   },
 
   async geocodeDawa(query) {
-    for (const baseUrl of [
+    const endpoints = [
       APP_CONFIG.dawaAdresseUrl,
       APP_CONFIG.dawaAdgangUrl
-    ]) {
+    ];
+
+    for (const baseUrl of endpoints) {
       try {
         const url = `${baseUrl}?${Utils.qs({
           q: query,
@@ -29,12 +41,17 @@ const Api = {
           per_side: 1
         })}`;
 
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          headers: { Accept: "application/json" },
+          cache: "no-store"
+        });
 
-        if (!response.ok) continue;
+        if (!response.ok) {
+          continue;
+        }
 
         const data = await response.json();
-        const hit = data?.[0];
+        const hit = Array.isArray(data) ? data[0] : null;
 
         if (hit?.x && hit?.y) {
           return {
@@ -47,7 +64,7 @@ const Api = {
           };
         }
       } catch (error) {
-        console.warn("DAWA-fejl", error);
+        console.warn("DAWA-fejl:", error);
       }
     }
 
@@ -56,23 +73,32 @@ const Api = {
 
   async geocodeNominatim(query) {
     try {
+      const searchText = `${query} Denmark`;
+
       const url = `${APP_CONFIG.nominatimUrl}?${Utils.qs({
-        q: `${query}, Denmark`,
+        q: searchText,
         format: "jsonv2",
         limit: 1,
         addressdetails: 1
       })}`;
 
       const response = await fetch(url, {
-        headers: { Accept: "application/json" }
+        headers: {
+          Accept: "application/json"
+        },
+        cache: "no-store"
       });
 
-      if (!response.ok) return null;
+      if (!response.ok) {
+        return null;
+      }
 
       const data = await response.json();
-      const hit = data?.[0];
+      const hit = Array.isArray(data) ? data[0] : null;
 
-      if (!hit?.lat || !hit?.lon) return null;
+      if (!hit?.lat || !hit?.lon) {
+        return null;
+      }
 
       return {
         label: hit.display_name || query,
@@ -81,7 +107,7 @@ const Api = {
         source: "OpenStreetMap/Nominatim"
       };
     } catch (error) {
-      console.warn("Nominatim-fejl", error);
+      console.warn("Nominatim-fejl:", error);
       return null;
     }
   },
@@ -107,40 +133,22 @@ const Api = {
       itemsPerPage: APP_CONFIG.itemsPerPage
     })}`;
 
-    let data;
-    let transport = "Direkte KB";
-
-    try {
-      data = await this.fetchJson(apiUrl);
-    } catch (directError) {
-      console.warn("Direkte KB-kald fejlede. Prøver CORS-fallback.", directError);
-
-      const proxyUrl =
-        APP_CONFIG.corsProxyPrefix +
-        encodeURIComponent(apiUrl);
-
-      data = await this.fetchJson(proxyUrl);
-      transport = "CORS-fallback";
-    }
-
-    return {
-      apiUrl,
-      transport,
-      items: this.normalizeKbResponse(data, center, apiUrl)
-    };
-  },
-
-  async fetchJson(url) {
-    const response = await fetch(url, {
+    const response = await fetch(apiUrl, {
       headers: { Accept: "application/json" },
       cache: "no-store"
     });
 
     if (!response.ok) {
-      throw new Error(`API-fejl ${response.status}`);
+      throw new Error(`KB API-fejl ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+
+    return {
+      apiUrl,
+      transport: "Direkte KB",
+      items: this.normalizeKbResponse(data, center, apiUrl)
+    };
   },
 
   normalizeKbResponse(data, center, apiUrl) {
@@ -158,6 +166,7 @@ const Api = {
     return rawItems.map((item, index) => {
       const props = item?.properties || {};
       const geometry = item?.geometry || {};
+
       const coords = Array.isArray(geometry.coordinates)
         ? geometry.coordinates
         : [];
@@ -212,22 +221,26 @@ const Api = {
 
       const lat =
         latFromGeoJson ??
-        Utils.num(this.getFirst(flat, [
-          "lat",
-          "latitude",
-          "wgs84_lat",
-          "y"
-        ]));
+        Utils.num(
+          this.getFirst(flat, [
+            "lat",
+            "latitude",
+            "wgs84_lat",
+            "y"
+          ])
+        );
 
       const lon =
         lonFromGeoJson ??
-        Utils.num(this.getFirst(flat, [
-          "lon",
-          "lng",
-          "longitude",
-          "wgs84_lon",
-          "x"
-        ]));
+        Utils.num(
+          this.getFirst(flat, [
+            "lon",
+            "lng",
+            "longitude",
+            "wgs84_lon",
+            "x"
+          ])
+        );
 
       const distance =
         Number.isFinite(lat) && Number.isFinite(lon)
@@ -299,8 +312,7 @@ const Api = {
     );
 
     for (const key of keys) {
-      const value =
-        lowerMap.get(String(key).toLowerCase());
+      const value = lowerMap.get(String(key).toLowerCase());
 
       if (value !== undefined && value !== null && value !== "") {
         return value;
@@ -318,7 +330,9 @@ const Api = {
   },
 
   flattenObject(obj, prefix = "", out = {}) {
-    if (obj === null || obj === undefined) return out;
+    if (obj === null || obj === undefined) {
+      return out;
+    }
 
     if (typeof obj !== "object") {
       out[prefix] = obj;

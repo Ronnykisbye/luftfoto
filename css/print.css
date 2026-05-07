@@ -1,0 +1,6 @@
+/* AFSNIT 01 – Print */
+@media print{
+  .topbar,.search-panel,.side-panel,.footer,.actions{display:none!important}
+  body{background:#fff;color:#000}
+  .shell{width:100%;padding:0}.panel{box-shadow:none;border:1px solid #777}.results{grid-template-columns:1fr}
+}

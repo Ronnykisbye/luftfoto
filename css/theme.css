@@ -1,0 +1,18 @@
+/* AFSNIT 01 – Farver */
+:root{
+  --bg:#231914;--bg-2:#3a2a1f;--card:#f2dfbd;--card-2:#e8c994;--paper:#fff4d8;
+  --text:#26180f;--soft:#6c5138;--line:#b98c54;--gold:#c99a58;--brown:#7b3f1f;
+  --green:#315b4d;--red:#8d2c22;--white:#fff8e9;--shadow:0 24px 80px rgba(0,0,0,.30);
+  --radius:24px;--font-serif:Georgia,Cambria,"Times New Roman",serif;--font-ui:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+html[data-theme="night"]{
+  --bg:#0f0e0c;--bg-2:#1b1510;--card:#2b2118;--card-2:#3b2b1c;--paper:#2a2017;
+  --text:#f6e7ca;--soft:#d0b486;--line:#7d6039;--gold:#d1a15b;--brown:#d29555;
+  --green:#79b09a;--red:#ff8a74;--white:#f8ead0;--shadow:0 24px 80px rgba(0,0,0,.62);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--text);font-family:var(--font-ui);background:
+radial-gradient(circle at 10% 0%,rgba(201,154,88,.28),transparent 30%),
+linear-gradient(135deg,var(--bg),var(--bg-2))}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;background-image:linear-gradient(90deg,rgba(255,255,255,.15) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.15) 1px,transparent 1px);background-size:36px 36px}

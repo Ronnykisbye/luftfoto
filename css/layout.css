@@ -1,0 +1,14 @@
+/* AFSNIT 01 – Grundlayout */
+.shell{width:min(1220px,calc(100% - 30px));margin:auto;padding:24px 0 46px}
+.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px clamp(14px,4vw,38px);background:rgba(35,25,20,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(201,154,88,.35);color:var(--white)}
+.brand{display:flex;gap:12px;align-items:center;color:inherit;text-decoration:none}.brand__icon{width:48px;height:48px}.brand strong{display:block;font-family:var(--font-serif);font-size:1.25rem;letter-spacing:.03em}.brand small{display:block;color:rgba(255,248,233,.72)}
+.topbar__actions,.hero__actions{display:flex;gap:10px;flex-wrap:wrap}
+.panel{background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.04)),var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.hero{display:grid;grid-template-columns:1.45fr .75fr;gap:26px;padding:clamp(24px,5vw,52px);margin-bottom:22px;overflow:hidden}
+.hero h1{font-family:var(--font-serif);font-size:clamp(2.6rem,8vw,6.5rem);line-height:.9;margin:0 0 18px;letter-spacing:-.055em}.lead{font-size:1.08rem;line-height:1.7;max-width:760px;color:var(--soft)}
+.hero__archive-card{border:1px dashed var(--brown);border-radius:22px;background:var(--card-2);padding:18px;display:grid;gap:12px;align-content:center;transform:rotate(1.2deg)}.hero__archive-card img{width:100%;border-radius:16px;border:1px solid rgba(123,63,31,.35)}
+.search-panel,.results-panel,.side-panel{padding:22px}.search-panel{margin-bottom:22px}
+.search-grid{display:grid;grid-template-columns:2fr .75fr .75fr .55fr auto;gap:13px;align-items:end}.wide{min-width:0}
+.dashboard{display:grid;grid-template-columns:330px 1fr;gap:22px}.side-panel{align-self:start;position:sticky;top:94px}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.footer{width:min(1220px,calc(100% - 30px));margin:0 auto 34px;color:rgba(255,248,233,.75);text-align:center}
+@media(max-width:980px){.hero,.dashboard,.search-grid{grid-template-columns:1fr}.side-panel{position:static}.results{grid-template-columns:1fr}.topbar{align-items:flex-start}}

@@ -6,6 +6,9 @@ window.APP_CONFIG = {
   dawaAdgangUrl: "https://api.dataforsyningen.dk/adgangsadresser",
   nominatimUrl: "https://nominatim.openstreetmap.org/search",
   itemsPerPage: 500,
-  maxRadiusMeters: 6000,
-  demoFallback: true
+  maxRadiusMeters: 10000,
+
+  // VIGTIG RETTELSE:
+  // Demo-data må IKKE bruges ved normale søgninger
+  useDemoFallbackForNormalSearch: false
 };

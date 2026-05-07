@@ -1,29 +1,41 @@
-# Luftfoto Arkivet Pro v4
+# Luftfoto Arkivet Pro v5
 
 ## Hovedrettelse
 
-v4 fjerner den fejl, hvor almindelig søgning kunne vise demo-resultater fra tidligere test.
+v5 retter problemet med `Failed to fetch`.
 
-## Hvad er ændret?
+Appen gør nu dette:
 
-- Normal søgning bruger kun live KB-data.
-- Demo-data bruges kun ved demo-knapper.
-- Tidligere resultater ryddes altid før ny søgning.
-- Hvis KB/API fejler, vises en fejlbesked i stedet for demo-resultater.
-- Appen læser KB's GeoJSON-format korrekt:
-  - `geometry.coordinates`
-  - `properties.subjectCreationDate`
-  - `properties.thumbnail`
-  - `properties.src`
-  - `properties.genre`
-  - `properties.geographic`
-- Der er tilføjet knap til seneste API-kald.
+1. Søger først direkte i KB API.
+2. Hvis browseren blokerer kaldet, prøver appen CORS-fallback.
+3. Hvis begge fejler, vises fejl.
+4. Demo-data vises aldrig i normal søgning.
 
-## Test efter upload
+## Vigtigt
 
-1. Hard refresh: Ctrl + Shift + R.
-2. Tjek at topbaren siger `Luftfoto Arkivet Pro v4`.
-3. Søg: `Odense Havn`, år `1950`.
-4. Der må ikke stå `Demo`.
-5. Der må ikke vises Vesterbro eller Helsingør.
+Normal søgning bruger kun live-data.
+
+Demo-data bruges kun ved disse knapper:
+
+- Demo: Moselundsvej 1950
+- Demo: Vesterbro 1950
+
+## Test
+
+Efter upload:
+
+1. Tryk `Ctrl + Shift + R`.
+2. Tjek at topbaren siger `Luftfoto Arkivet Pro v5`.
+3. Søg på `Odense Havn`.
+4. Tjek at der ikke står `Demo`.
+5. Tjek at der ikke vises Vesterbro eller Helsingør.
 6. Tryk `Kør intern QA-test`.
+
+## Hvis den stadig fejler
+
+Så er både direkte KB-kald og proxy-kald blokeret.
+Næste løsning er en lille backend/proxy via fx:
+
+- Cloudflare Worker
+- Vercel Function
+- Netlify Function

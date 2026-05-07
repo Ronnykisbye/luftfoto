@@ -3,41 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Luftfoto Arkivet Pro v4</title>
+  <title>Luftfoto Arkivet Pro v5</title>
   <meta name="description" content="Find historiske danske luftfotos efter adresse, sted og cirka-årstal." />
+
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+
   <link rel="stylesheet" href="css/theme.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
 </head>
 
 <body>
-  <!-- AFSNIT 01 – Topbar -->
   <header class="topbar">
-    <a class="brand" href="./" aria-label="Luftfoto Arkivet Pro v4">
+    <a class="brand" href="./" aria-label="Luftfoto Arkivet Pro v5">
       <img class="brand__icon" src="assets/icon.svg" alt="" />
       <span>
-        <strong>Luftfoto Arkivet Pro v4</strong>
-        <small>Kun live-søgning ved normal søgning</small>
+        <strong>Luftfoto Arkivet Pro v5</strong>
+        <small>Live KB-søgning med CORS-fallback</small>
       </span>
     </a>
 
-    <nav class="topbar__actions" aria-label="Handlinger">
+    <nav class="topbar__actions">
       <button id="themeToggle" class="ghost-btn" type="button">☀️ / 🌙</button>
       <a class="ghost-btn" href="docs/README.md" target="_blank" rel="noreferrer">README</a>
     </nav>
   </header>
 
   <main class="shell">
-    <!-- AFSNIT 02 – Hero -->
     <section class="hero panel">
       <div>
         <p class="eyebrow">Danmark før Google</p>
         <h1>Se historien fra luften</h1>
         <p class="lead">
-          Søg live i Det Kgl. Biblioteks luftfoto-API. Demo-data bruges kun ved de to demo-knapper.
-          Almindelige søgninger kan ikke længere vise gamle demo-resultater.
+          v5 prøver først KB direkte. Hvis browseren blokerer forbindelsen,
+          prøver appen en CORS-fallback. Normal søgning viser aldrig demo-resultater.
         </p>
 
         <div class="hero__actions">
@@ -47,13 +47,12 @@
       </div>
 
       <div class="hero__archive-card">
-        <span class="stamp">v4</span>
+        <span class="stamp">v5</span>
         <img src="assets/archive-preview.svg" alt="Illustration af historisk luftfoto" />
-        <p>Rettet: ingen falske demo-resultater i live-søgning.</p>
+        <p>Rettet: “Failed to fetch” håndteres med CORS-fallback.</p>
       </div>
     </section>
 
-    <!-- AFSNIT 03 – Søgeformular -->
     <section class="panel search-panel">
       <div class="section-title">
         <div>
@@ -77,11 +76,11 @@
         <label>
           <span>Radius</span>
           <select id="radiusInput">
-            <option value="750">750 m</option>
             <option value="1500" selected>1,5 km</option>
             <option value="3000">3 km</option>
             <option value="6000">6 km</option>
             <option value="10000">10 km</option>
+            <option value="20000">20 km</option>
           </select>
         </label>
 
@@ -102,7 +101,6 @@
       </div>
     </section>
 
-    <!-- AFSNIT 04 – Dashboard -->
     <section class="dashboard">
       <aside class="panel side-panel">
         <h2>Kontrolpanel</h2>
@@ -114,13 +112,13 @@
         <button id="clearBtn" class="full-btn danger" type="button">Ryd resultater</button>
 
         <div class="mini-box">
-          <strong>Rettet i v4</strong>
-          <p>Normal søgning kan ikke bruge demo-data. Hvis KB fejler, får du en fejlbesked i stedet.</p>
+          <strong>Rettet i v5</strong>
+          <p>Hvis KB blokeres af browseren, prøver appen en CORS-fallback.</p>
         </div>
 
         <div class="mini-box">
-          <strong>KB-format understøttet</strong>
-          <p>v4 læser GeoJSON: geometry.coordinates, properties.subjectCreationDate, properties.thumbnail og properties.src.</p>
+          <strong>Vigtigt</strong>
+          <p>Demo-data bruges kun ved demo-knapper. Aldrig ved normal søgning.</p>
         </div>
       </aside>
 
@@ -141,7 +139,7 @@
   </main>
 
   <footer class="footer">
-    <p>Luftfoto Arkivet Pro v4 • GitHub Pages-klar • Ingen skjult demo-fallback ved normal søgning</p>
+    <p>Luftfoto Arkivet Pro v5 • GitHub Pages-klar</p>
   </footer>
 
   <script src="js/config.js"></script>
